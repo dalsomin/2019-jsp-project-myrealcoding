@@ -1,0 +1,130 @@
+-- 회원가입
+-- 휴대폰번호,닉네임 넣으면
+-- 멤버테이블에 회원이 추가되는것.
+-- m_code증가하는 시퀀스
+create sequence seq_m_code
+increment by 1
+start with 1011;
+
+-- 회원추가 프로시저
+create or replace procedure addMem
+(
+  vget_phonenum member.phonenum%type
+  , vget_nickname member.m_nickname%type
+)
+is
+begin
+insert into member (m_code, regdate,phonenum,m_nickname,prt_state,prt_ch_date) 
+values (seq_m_code.nextval,sysdate,vget_phonenum,vget_nickname,'가입',sysdate);
+--exception
+commit;
+end;
+exec addMem ('010-5566-7788','hoho');
+
+select *
+from member order by m_code;
+
+select *
+from board;
+
+-- 회원삭제 프로시저
+create or replace procedure deleteMem
+(
+  vget_m_code member.m_code%type
+)
+is
+begin
+delete from member 
+where m_code = vget_m_code;
+--exception
+commit;
+end;
+exec deleteMem ('1012');
+
+select *
+from member order by m_code;
+---------------------------------------------
+--인증번호확인하는 프로시저만들기
+create or replace procedure innumber_check  
+(  pinjeung_code number
+  ,pinjeung_ok out number 
+  ,pchecknum number)
+is
+begin
+  if(pchecknum=pinjeung_code) then pinjeung_ok := 1;
+  else pinjeung_ok := 0;
+  end if;
+  if(pinjeung_ok = 1) then dbms_output.put_line
+  ('[[인증확인!]] --->***당근마켓에 오신것을 환영합니다^▼^ ***');
+  else dbms_output.put_line('잘못입력하셨습니다. 다시 입력해주세요~ㅜ.ㅜ');
+  end if;
+  commit;
+end;
+-----------------------------------------------------
+-- 인증번호 받을 변수 선언
+var injeung_code number;            
+------------------------------------------------------
+-- 인증번호 생성 익명 프로시저
+begin                     
+  select lpad(trunc(dbms_random.value*1000000),6,'0')
+  into :injeung_code from dual;
+end;
+-----------------------------------------------------
+ -- 인증번호 출력
+print injeung_code;                 
+-----------------------------------------------------
+var injeung_ok number;                -- 인증번호 확인 할 변수 선언
+exec innumber_check(:injeung_code,:injeung_ok,183408);         -- 인증번호 확인 프로시저
+exec innumber_check(:injeung_code,:injeung_ok,000000);   
+
+
+
+-- 인증번호 출력
+--------------------------------------------------------------------------------------------
+SELECT dbms_random.VALUE AS 랜덤 
+,dbms_random.VALUE(0,100) AS 실수
+,dbms_random.STRING('U',5) AS 대문자
+,dbms_random.STRING('L',2) AS 소문자
+FROM dual;
+
+select dbms_random.value*100000 from dual;
+
+-------------------------------------------------------------------------------------------
+
+---------------------------------------------
+create or replace procedure innumber_check  
+(  pinjeung_code number
+  ,pinjeung_ok out number 
+  ,pchecknum number)
+is
+begin
+  if(pchecknum=pinjeung_code) then pinjeung_ok := 1;
+  else pinjeung_ok := 0;
+  end if;
+  if(pinjeung_ok = 1) then dbms_output.put_line
+  ('[[인증확인!]] --->***당근마켓에 오신것을 환영합니다^▼^ ***');
+  else dbms_output.put_line('잘못입력하셨습니다. 다시 입력해주세요~ㅜ.ㅜ');
+  end if;
+  commit;
+end;
+--
+        
+declare 
+code number;    
+begin                     
+  select lpad(trunc(dbms_random.value*1000000),6,'0')
+  into :code from dual;
+end;
+--
+print code;                 
+-----------------------------------------------------
+var ok number;                
+------------------------------------------------------
+exec innumber_check(:code,:ok,091651);         
+exec innumber_check(:code,:ok,000000);   
+
+
+
+
+
+
